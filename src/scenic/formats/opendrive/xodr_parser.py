@@ -1105,12 +1105,26 @@ class Road:
 class Signal:
     """Traffic lights, stop signs, etc."""
 
-    def __init__(self, id_, country, type_, subtype, orientation, validity=None):
+    '''
+    -The position of the signal is described relative to the road reference line, using the s- and t- coordinates.
+    '''
+
+    def __init__(self, id_, country, type_, subtype, orientation, s, t, zOffset, hOffset, height, width, validity=None):
         self.id_ = id_
         self.country = country
         self.type_ = type_
         self.subtype = subtype
         self.orientation = orientation
+
+        #Position-related Attributes
+        self.s = s
+        self.t = t
+        self.zOffset = zOffset
+        self.hOffset = hOffset
+        self.height = height
+        self.width = width
+
+        #Had to move validity
         self.validity = validity
 
     def is_valid(self):
@@ -1339,6 +1353,14 @@ class RoadMap:
             signal_elem.get("type"),
             signal_elem.get("subtype"),
             signal_elem.get("orientation"),
+            
+            float(signal_elem.get("s", 0.0)),
+            float(signal_elem.get("t", 0.0)),
+            float(signal_elem.get("zOffset", 0.0)),
+            float(signal_elem.get("hOffset", 0.0)),
+            float(signal_elem.get("height", 0.0)),
+            float(signal_elem.get("width", 0.0)),
+
             self.__parse_signal_validity(signal_elem.find("validity")),
         )
 
@@ -1594,6 +1616,12 @@ class RoadMap:
                             referencedSignal.type_,
                             referencedSignal.subtype,
                             signalReference.orientation,
+                            referencedSignal.s,
+                            referencedSignal.t,
+                            referencedSignal.zOffset,
+                            referencedSignal.hOffset,
+                            referencedSignal.height,
+                            referencedSignal.width,
                             signalReference.validity,
                         )
                         road.signals.append(signal)
